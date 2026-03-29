@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jesse | Information Systems Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-dark: #003d1f;
+    --cyan: #00e5ff;
+    --bg: #080c0a;
+    --bg2: #0d1410;
+    --bg3: #111a14;
+    --surface: #141f17;
+    --surface2: #1a2920;
+    --border: rgba(0,255,136,0.12);
+    --border-bright: rgba(0,255,136,0.3);
+    --text: #c8d8c0;
+    --text-dim: #6a8070;
+    --text-bright: #e8f4e0;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* Grid background */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(8,12,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--green);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-logo span { color: var(--text-dim); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--green); }
+
+  /* ─── SECTIONS ─── */
+  section { position: relative; z-index: 1; }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 80px 2rem 4rem;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .hero-inner { width: 100%; }
+
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--green);
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-name-accent { color: var(--green); }
+
+  .hero-subtitle {
+    font-family: var(--mono);
+    font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+    color: var(--text-dim);
+    margin-bottom: 2rem;
+    font-weight: 300;
+  }
+
+  .hero-subtitle span { color: var(--cyan); }
+
+  .hero-desc {
+    max-width: 560px;
+    font-size: 16px;
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 3rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--green);
+    color: var(--bg);
+    font-weight: 700;
+  }
+
+  .btn-primary:hover {
+    background: var(--green-dim);
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--green);
+    border: 1px solid var(--border-bright);
+  }
+
+  .btn-outline:hover {
+    background: rgba(0,255,136,0.06);
+    border-color: var(--green);
+  }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--green);
+    background: rgba(0,255,136,0.06);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 2px;
+    margin-bottom: 2.5rem;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* ─── SECTION WRAPPER ─── */
+  .section-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--green);
+  }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 3rem;
+    letter-spacing: -0.02em;
+  }
+
+  /* ─── ABOUT ─── */
+  #about { background: var(--bg2); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  .about-text p:last-child { margin-bottom: 0; }
+
+  .about-facts {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .fact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .fact-icon {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--green);
+    min-width: 28px;
+  }
+
+  .fact-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-family: var(--mono);
+    margin-bottom: 2px;
+  }
+
+  .fact-value {
+    font-size: 14px;
+    color: var(--text-bright);
+    font-weight: 500;
+  }
+
+  /* ─── SKILLS ─── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-group {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .skill-group-header {
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .skill-group-header.proficient { color: var(--green); }
+  .skill-group-header.familiar { color: var(--cyan); }
+  .skill-group-header.tools { color: #f0a500; }
+
+  .skill-tags {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .skill-tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+
+  .skill-tag.proficient {
+    color: var(--green);
+    border-color: rgba(0,255,136,0.25);
+    background: rgba(0,255,136,0.05);
+  }
+
+  .skill-tag.familiar {
+    color: var(--cyan);
+    border-color: rgba(0,229,255,0.25);
+    background: rgba(0,229,255,0.05);
+  }
+
+  .skill-tag.tools {
+    color: #f0a500;
+    border-color: rgba(240,165,0,0.25);
+    background: rgba(240,165,0,0.05);
+  }
+
+  /* ─── PROJECTS ─── */
+  #projects { background: var(--bg2); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-card:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-3px);
+  }
+
+  .project-header {
+    padding: 1.25rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .project-icon {
+    font-size: 22px;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-name {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 0.25rem;
+  }
+
+  .project-lang {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .project-lang::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+  }
+
+  .project-body {
+    padding: 1rem 1.5rem;
+    flex: 1;
+  }
+
+  .project-desc {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .project-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 2px;
+  }
+
+  .project-footer {
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 1rem;
+  }
+
+  .project-link {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .project-link:hover { color: var(--green); }
+
+  .project-link svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+  }
+
+  /* GitHub CTA card */
+  .github-cta {
+    margin-top: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .github-cta-text {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .github-cta-text strong {
+    display: block;
+    color: var(--text-bright);
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+
+  /* ─── YOUTUBE ─── */
+  .yt-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .yt-embed-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .yt-embed-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 0.6rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .yt-dot {
+    width: 8px;
+    height: 8px;
+    background: #ff3333;
+    border-radius: 50%;
+  }
+
+  .yt-embed-wrap iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border: none;
+  }
+
+  .yt-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .yt-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    border-radius: 2px;
+  }
+
+  .yt-stat-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  .yt-stat-value {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .yt-channel-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255,0,0,0.06);
+    border: 1px solid rgba(255,0,0,0.2);
+    padding: 1rem 1.25rem;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .yt-channel-link:hover {
+    background: rgba(255,0,0,0.1);
+    border-color: rgba(255,0,0,0.4);
+  }
+
+  .yt-icon {
+    color: #ff3333;
+    font-size: 20px;
+  }
+
+  .yt-channel-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-bright);
+    font-weight: 500;
+  }
+
+  .yt-channel-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  /* ─── CONTACT / FOOTER ─── */
+  #contact { background: var(--bg2); }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .contact-desc {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+
+  .social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .social-link:hover {
+    border-color: var(--border-bright);
+    background: var(--surface2);
+  }
+
+  .social-link-icon {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--green);
+    min-width: 24px;
+  }
+
+  .social-link-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex: 1;
+  }
+
+  .social-link-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-bright);
+  }
+
+  .contact-availability {
+    padding: 1.5rem;
+    background: var(--green-dark);
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-availability h3 {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .contact-availability p {
+    font-size: 13px;
+    color: rgba(0,255,136,0.7);
+    line-height: 1.6;
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-text span { color: var(--green); }
+
+  /* ─── DIVIDER ─── */
+  .section-divider {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .section-divider hr {
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Cursor blink */
+  .cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    background: var(--green);
+    vertical-align: text-bottom;
+    animation: blink 1.2s step-end infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 700px) {
+    .about-grid,
+    .yt-container,
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .nav-links { display: none; }
+
+    h1 { font-size: 2rem; }
+
+    .github-cta {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">jesse<span>@portfolio</span>:~$</div>
+  <ul class="nav-links">
+    <li><a href="#about">about</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#youtube">youtube</a></li>
+    <li><a href="#contact">contact</a></li>
+    <li><a href="https://www.linkedin.com/in/jesse-agbesi-61bb36213/" target="_blank" style="color:var(--cyan)">linkedin</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      Open to opportunities · graduating may 2026
+    </div>
+    <div class="hero-tag">Information Systems · Towson University</div>
+    <h1>Hi, I'm <span class="hero-name-accent">Jesse</span><span class="cursor"></span></h1>
+    <p class="hero-subtitle">B.S. Information Systems &mdash; <span>Data · Cybersecurity · IT Management</span></p>
+    <p class="hero-desc">
+      A senior IS student with a passion for building things that matter — from database systems to Java applications. I bridge the gap between technical problem-solving and business impact.
+    </p>
+    <div class="hero-cta">
+      <a href="https://github.com/Jessefire5" target="_blank" class="btn btn-primary">View GitHub</a>
+      <a href="https://www.linkedin.com/in/jesse-agbesi-61bb36213/" target="_blank" class="btn btn-outline" style="color:var(--cyan);border-color:rgba(0,229,255,0.3);">LinkedIn</a>
+      <a href="https://www.youtube.com/channel/UCSgl13z8jsWt_ktgRQPwIBA" target="_blank" class="btn btn-outline">YouTube Channel</a>
+      <a href="#contact" class="btn btn-outline">Contact Me</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-wrap">
+    <div class="section-label">01 — About</div>
+    <h2>Who I am</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm a senior at Towson University pursuing a B.S. in Information Systems with a Business track, expected to graduate in May 2026. My coursework has given me a strong foundation across the four IS disciplines: Data Analytics, Cybersecurity, IT Project Management, and Systems Administration.</p>
+        <p>Beyond the classroom, I stay connected to the tech community through Towson's Software Engineering Club and Esports Club — two spaces where I can explore both the creative and competitive sides of technology.</p>
+        <p>I'm currently focused on building portfolio projects that demonstrate real-world technical skills while actively preparing to enter the IS field full time after graduation.</p>
+      </div>
+      <div class="about-facts">
+        <div class="fact-card">
+          <div class="fact-icon">◈</div>
+          <div>
+            <div class="fact-label">University</div>
+            <div class="fact-value">Towson University</div>
+          </div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-icon">◉</div>
+          <div>
+            <div class="fact-label">Degree</div>
+            <div class="fact-value">B.S. Information Systems — Business Track</div>
+          </div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-icon">◷</div>
+          <div>
+            <div class="fact-label">Graduation</div>
+            <div class="fact-value">May 2026</div>
+          </div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-icon">◈</div>
+          <div>
+            <div class="fact-label">Clubs</div>
+            <div class="fact-value">Software Engineering · Esports</div>
+          </div>
+        </div>
+        <div class="fact-card">
+          <div class="fact-icon">◉</div>
+          <div>
+            <div class="fact-label">Focus Areas</div>
+            <div class="fact-value">Data Analytics · Cybersecurity · IT PM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-wrap">
+    <div class="section-label">02 — Skills</div>
+    <h2>Technical toolset</h2>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <div class="skill-group-header proficient">// Proficient</div>
+        <div class="skill-tags">
+          <span class="skill-tag proficient">SQL</span>
+          <span class="skill-tag proficient">Java</span>
+          <span class="skill-tag proficient">Database Management</span>
+          <span class="skill-tag proficient">System Analysis</span>
+          <span class="skill-tag proficient">IT Project Management</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-header familiar">// Familiar</div>
+        <div class="skill-tags">
+          <span class="skill-tag familiar">Python</span>
+          <span class="skill-tag familiar">Linux</span>
+          <span class="skill-tag familiar">HTML/CSS</span>
+          <span class="skill-tag familiar">Wireshark</span>
+          <span class="skill-tag familiar">Network Admin</span>
+          <span class="skill-tag familiar">Cybersecurity</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-group-header tools">// Coursework</div>
+        <div class="skill-tags">
+          <span class="skill-tag tools">Database Management</span>
+          <span class="skill-tag tools">Advanced Data Mgmt</span>
+          <span class="skill-tag tools">System Analysis & Design</span>
+          <span class="skill-tag tools">Intro to Cybersecurity</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-wrap">
+    <div class="section-label">03 — Projects</div>
+    <h2>What I've built</h2>
+    <div class="projects-grid">
+
+      <div class="project-card">
+        <div class="project-header">
+          <div>
+            <div class="project-icon">🗄️</div>
+            <div class="project-name">Library Database Management System</div>
+            <div class="project-lang">SQL</div>
+          </div>
+        </div>
+        <div class="project-body">
+          <p class="project-desc">A relational database system designed to manage library operations — tracking books, members, loans, and returns. Demonstrates strong SQL schema design, normalization, and query optimization principles.</p>
+          <div class="project-tags">
+            <span class="project-tag">SQL</span>
+            <span class="project-tag">Relational DB</span>
+            <span class="project-tag">Schema Design</span>
+            <span class="project-tag">Data Management</span>
+          </div>
+        </div>
+        <div class="project-footer">
+          <a href="https://github.com/Jessefire5" target="_blank" class="project-link">
+            <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <div>
+            <div class="project-icon">✅</div>
+            <div class="project-name">Task Management Application</div>
+            <div class="project-lang">Java</div>
+          </div>
+        </div>
+        <div class="project-body">
+          <p class="project-desc">A Java-based task management app for creating, tracking, and organizing tasks with priorities and deadlines. Demonstrates object-oriented design principles, data structures, and clean application architecture.</p>
+          <div class="project-tags">
+            <span class="project-tag">Java</span>
+            <span class="project-tag">OOP</span>
+            <span class="project-tag">Data Structures</span>
+            <span class="project-tag">App Design</span>
+          </div>
+        </div>
+        <div class="project-footer">
+          <a href="https://github.com/Jessefire5" target="_blank" class="project-link">
+            <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="github-cta">
+      <div class="github-cta-text">
+        <strong>More on GitHub</strong>
+        See all repositories, contributions, and activity at github.com/Jessefire5
+      </div>
+      <a href="https://github.com/Jessefire5" target="_blank" class="btn btn-outline">github.com/Jessefire5 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- YOUTUBE -->
+<section id="youtube">
+  <div class="section-wrap">
+    <div class="section-label">04 — YouTube</div>
+    <h2>On camera</h2>
+    <div class="yt-container">
+      <div class="yt-embed-wrap">
+        <div class="yt-embed-label">
+          <span class="yt-dot"></span>
+          youtube / channel
+        </div>
+        <iframe
+          src="https://www.youtube.com/embed?listType=user_uploads&list=UCSgl13z8jsWt_ktgRQPwIBA"
+          title="Jesse's YouTube Channel"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="yt-info">
+        <a href="https://www.youtube.com/channel/UCSgl13z8jsWt_ktgRQPwIBA" target="_blank" class="yt-channel-link">
+          <span class="yt-icon">▶</span>
+          <div>
+            <div class="yt-channel-name">Jesse's YouTube Channel</div>
+            <div class="yt-channel-sub">Click to visit channel →</div>
+          </div>
+        </a>
+        <div class="yt-stat">
+          <div class="yt-stat-label">Channel URL</div>
+          <div class="yt-stat-value" style="font-size:12px; word-break:break-all;">youtube.com/channel/<br>UCSgl13z8jsWt_ktgRQPwIBA</div>
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--border); padding:1rem 1.25rem; border-radius:2px;">
+          <div class="yt-stat-label" style="margin-bottom:0.5rem;">About the channel</div>
+          <p style="font-size:13px; color:var(--text); line-height:1.7;">Content from Jesse — check the channel for videos on tech, gaming, and more. Subscribe to follow along.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-wrap">
+    <div class="section-label">05 — Contact</div>
+    <h2>Get in touch</h2>
+    <div class="contact-grid">
+      <div>
+        <div class="contact-availability">
+          <h3><span class="status-dot" style="display:inline-block"></span> Available for opportunities</h3>
+          <p>Graduating May 2026 and actively seeking full-time IS roles in the Baltimore/DC area and beyond. Open to Data Analytics, Cybersecurity, IT PM, and Systems Administration positions.</p>
+        </div>
+        <p class="contact-desc">Whether you're a recruiter, a fellow student, or just want to connect about tech — feel free to reach out. I'm always happy to chat about information systems, projects, or the job market.</p>
+      </div>
+      <div class="social-links">
+        <a href="https://github.com/Jessefire5" target="_blank" class="social-link">
+          <span class="social-link-icon">GH</span>
+          <span class="social-link-label">GitHub</span>
+          <span class="social-link-value">Jessefire5</span>
+        </a>
+        <a href="https://www.instagram.com/jessefire5/" target="_blank" class="social-link">
+          <span class="social-link-icon" style="color:#e1306c;">IG</span>
+          <span class="social-link-label">Instagram</span>
+          <span class="social-link-value">@jessefire5</span>
+        </a>
+        <a href="https://www.linkedin.com/in/jesse-agbesi-61bb36213/" target="_blank" class="social-link">
+          <span class="social-link-icon" style="color:var(--cyan);">in</span>
+          <span class="social-link-label">LinkedIn</span>
+          <span class="social-link-value">jesse-agbesi</span>
+        </a>
+        <a href="https://www.youtube.com/channel/UCSgl13z8jsWt_ktgRQPwIBA" target="_blank" class="social-link">
+          <span class="social-link-icon" style="color:#ff3333;">YT</span>
+          <span class="social-link-label">YouTube</span>
+          <span class="social-link-value">My Channel</span>
+        </a>
+        <div class="social-link" style="cursor:default;">
+          <span class="social-link-icon">📍</span>
+          <span class="social-link-label">Location</span>
+          <span class="social-link-value">Baltimore, MD area</span>
+        </div>
+        <div class="social-link" style="cursor:default;">
+          <span class="social-link-icon">🎓</span>
+          <span class="social-link-label">University</span>
+          <span class="social-link-value">Towson University</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-text">
+    <span>jesse@portfolio</span>:~$ echo "built with intention · &copy; 2026"
+  </p>
+</footer>
+
+</body>
+</html>
