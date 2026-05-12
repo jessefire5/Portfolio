@@ -99,6 +99,10 @@
     0%,100% { box-shadow: 0 0 8px var(--pink), inset 0 0 8px rgba(255,45,120,0.05); }
     50%      { box-shadow: 0 0 20px var(--pink), inset 0 0 15px rgba(255,45,120,0.1); }
   }
+  @keyframes pulse-purple {
+    0%,100% { box-shadow: 0 0 8px var(--purple), inset 0 0 8px rgba(180,79,255,0.05); }
+    50%      { box-shadow: 0 0 20px var(--purple), inset 0 0 15px rgba(180,79,255,0.1); }
+  }
   @keyframes scanline-move {
     0%   { transform: translateY(-100%); }
     100% { transform: translateY(100vh); }
@@ -109,6 +113,10 @@
     50%      { transform: translateY(-8px); }
   }
   @keyframes spin-slow { to { transform: rotate(360deg); } }
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
 
   /* Moving scanline */
   .scanline {
@@ -366,6 +374,16 @@
   }
   .btn-yellow:hover {
     box-shadow: 0 0 25px rgba(255,230,0,0.4);
+  }
+
+  .btn-purple {
+    color: var(--purple);
+    border-color: var(--purple);
+    text-shadow: 0 0 8px var(--purple);
+    box-shadow: 0 0 15px rgba(180,79,255,0.2), inset 0 0 15px rgba(180,79,255,0.05);
+  }
+  .btn-purple:hover {
+    box-shadow: 0 0 25px rgba(180,79,255,0.5), inset 0 0 25px rgba(180,79,255,0.1);
   }
 
   /* Status pill */
@@ -630,10 +648,65 @@
     align-items: center;
     gap: 0.5rem;
     transition: text-shadow 0.2s;
+    cursor: pointer;
   }
 
   .project-footer-link:hover { text-shadow: 0 0 10px var(--cyan); }
   .project-footer-link::before { content: '→'; }
+
+  /* Capstone featured card */
+  .project-card-featured {
+    grid-column: 1 / -1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card-featured::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(180,79,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .capstone-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .capstone-stat {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(180,79,255,0.2);
+    background: rgba(180,79,255,0.04);
+    min-width: 120px;
+  }
+
+  .capstone-stat-value {
+    font-family: var(--orbitron);
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--purple);
+    text-shadow: 0 0 10px rgba(180,79,255,0.5);
+  }
+
+  .capstone-stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .capstone-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 
   .github-cta-strip {
     margin-top: 2rem;
@@ -670,6 +743,92 @@
     font-family: var(--mono);
     font-size: 11px;
     color: var(--text-dim);
+  }
+
+  /* ─── PDF MODAL ─── */
+  .pdf-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(4,4,13,0.92);
+    backdrop-filter: blur(12px);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .pdf-modal {
+    background: var(--bg2);
+    border: 1px solid rgba(180,79,255,0.3);
+    width: 100%;
+    max-width: 960px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    animation: modal-in 0.3s ease-out;
+    box-shadow: 0 0 60px rgba(180,79,255,0.15), 0 0 120px rgba(180,79,255,0.05);
+    position: relative;
+  }
+
+  .pdf-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid rgba(180,79,255,0.2);
+    background: rgba(180,79,255,0.06);
+    flex-shrink: 0;
+  }
+
+  .pdf-modal-title {
+    font-family: var(--orbitron);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--purple);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 8px var(--purple);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .pdf-modal-title-dot {
+    width: 6px; height: 6px;
+    background: var(--purple);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--purple);
+    animation: blink 1.5s step-end infinite;
+  }
+
+  .pdf-modal-close {
+    font-family: var(--orbitron);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--pink);
+    background: none;
+    border: 1px solid rgba(255,45,120,0.3);
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .pdf-modal-close:hover {
+    background: rgba(255,45,120,0.1);
+    box-shadow: 0 0 15px rgba(255,45,120,0.2);
+  }
+
+  .pdf-modal-body {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .pdf-modal-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
   }
 
   /* ─── YOUTUBE ─── */
@@ -905,6 +1064,10 @@
     .social-grid { grid-template-columns: 1fr; }
     .stat-grid { grid-template-columns: 1fr 1fr; }
     .glitch-title { font-size: 2.5rem; }
+    .project-card-featured { grid-column: 1; }
+    .pdf-modal { height: 75vh; }
+    .capstone-stats { gap: 0.75rem; }
+    .capstone-stat { min-width: 100px; }
   }
 </style>
 </head>
@@ -1037,6 +1200,45 @@
     <div class="section-label">Projects</div>
     <h2>DEPLOYED MISSIONS</h2>
     <div class="projects-grid">
+
+      <!-- CAPSTONE — Featured full-width -->
+      <div class="cyber-card cyber-card-purple project-card project-card-featured">
+        <div class="project-card-id">MISSION_003 · SENIOR CAPSTONE · SPRING 2026</div>
+        <div class="project-lang-badge" style="color:var(--purple);border-color:rgba(180,79,255,0.3);background:rgba(180,79,255,0.05);">★ CAPSTONE PROJECT</div>
+        <div class="project-name">Student Travel — CIS Department Process Automation</div>
+        <p class="project-desc">Senior capstone project for the CIS Department's Travel Coordinator, Ms. Angela McDermott. Redesigned the student travel pre-authorization workflow using Microsoft Forms and Power Automate — cutting email volume from 10+ per request to just 1, saving roughly 1 hour per student. Built an automated Excel admin panel that reduced data complexity from 30+ fields to under 15, and implemented automated confirmation and reminder email workflows across the travel lifecycle. Conducted usability testing with students and delivered a full handoff package for production use.</p>
+        <div class="capstone-stats">
+          <div class="capstone-stat">
+            <div class="capstone-stat-value">90%</div>
+            <div class="capstone-stat-label">Email Reduction</div>
+          </div>
+          <div class="capstone-stat">
+            <div class="capstone-stat-value">~1 HR</div>
+            <div class="capstone-stat-label">Saved / Student</div>
+          </div>
+          <div class="capstone-stat">
+            <div class="capstone-stat-value">370+</div>
+            <div class="capstone-stat-label">Users Supported</div>
+          </div>
+          <div class="capstone-stat">
+            <div class="capstone-stat-value">50%</div>
+            <div class="capstone-stat-label">Fields Reduced</div>
+          </div>
+        </div>
+        <div class="project-tags">
+          <span class="project-tag">Microsoft Forms</span>
+          <span class="project-tag">Power Automate</span>
+          <span class="project-tag">Excel Automation</span>
+          <span class="project-tag">Process Design</span>
+          <span class="project-tag">DFD Modeling</span>
+          <span class="project-tag">Usability Testing</span>
+          <span class="project-tag">DocuSign</span>
+          <span class="project-tag">Stratus</span>
+        </div>
+        <div class="capstone-actions">
+          <a href="#" onclick="document.getElementById('pdf-modal').style.display='flex';return false;" class="btn-cyber btn-purple">View Presentation</a>
+        </div>
+      </div>
 
       <div class="cyber-card project-card">
         <div class="project-card-id">MISSION_001 · SQL</div>
@@ -1187,6 +1389,33 @@
   <div class="footer-text">© 2026 · TOWSON UNIVERSITY · ALL RIGHTS RESERVED</div>
   <div class="footer-text" style="color:var(--cyan);text-shadow:0 0 6px var(--cyan);">SESSION ACTIVE ■</div>
 </footer>
+
+<!-- PDF MODAL -->
+<div class="pdf-modal-overlay" id="pdf-modal">
+  <div class="pdf-modal">
+    <div class="pdf-modal-header">
+      <div class="pdf-modal-title">
+        <span class="pdf-modal-title-dot"></span>
+        CAPSTONE PRESENTATION · STUDENT TRAVEL
+      </div>
+      <button class="pdf-modal-close" onclick="document.getElementById('pdf-modal').style.display='none';">✕ CLOSE</button>
+    </div>
+    <div class="pdf-modal-body">
+      <iframe src="Final_Presentation.pdf" title="Capstone Presentation PDF"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Close modal on overlay click
+  document.getElementById('pdf-modal').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') document.getElementById('pdf-modal').style.display = 'none';
+  });
+</script>
 
 </body>
 </html>
