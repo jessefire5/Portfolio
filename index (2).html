@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JESSE.EXE — PORTFOLIO</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #04040d;
+    --bg2:      #070714;
+    --bg3:      #0a0a1a;
+    --surface:  #0d0d20;
+    --surface2: #111128;
+    --pink:     #ff2d78;
+    --cyan:     #00f5ff;
+    --yellow:   #ffe600;
+    --purple:   #b44fff;
+    --green:    #00ff9d;
+    --text:     #c8cfe8;
+    --text-dim: #4a5080;
+    --text-bright: #eef0ff;
+    --orbitron: 'Orbitron', monospace;
+    --mono:     'Share Tech Mono', monospace;
+    --raj:      'Rajdhani', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--raj);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* CRT scanlines */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.08) 3px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* Grid floor */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ─── GLITCH KEYFRAMES ─── */
+  @keyframes glitch1 {
+    0%,100% { clip-path: inset(0 0 98% 0); transform: translateX(0); }
+    20%      { clip-path: inset(30% 0 50% 0); transform: translateX(-4px); }
+    40%      { clip-path: inset(60% 0 20% 0); transform: translateX(4px); }
+    60%      { clip-path: inset(10% 0 80% 0); transform: translateX(-2px); }
+    80%      { clip-path: inset(80% 0 5% 0);  transform: translateX(2px); }
+  }
+  @keyframes glitch2 {
+    0%,100% { clip-path: inset(0 0 98% 0); transform: translateX(0); }
+    20%      { clip-path: inset(50% 0 30% 0); transform: translateX(4px); }
+    40%      { clip-path: inset(20% 0 65% 0); transform: translateX(-4px); }
+    60%      { clip-path: inset(75% 0 10% 0); transform: translateX(3px); }
+    80%      { clip-path: inset(5% 0 85% 0);  transform: translateX(-3px); }
+  }
+  @keyframes flicker {
+    0%,100% { opacity: 1; }
+    92%      { opacity: 1; }
+    93%      { opacity: 0.4; }
+    94%      { opacity: 1; }
+    96%      { opacity: 0.6; }
+    97%      { opacity: 1; }
+  }
+  @keyframes pulse-border {
+    0%,100% { box-shadow: 0 0 8px var(--cyan), inset 0 0 8px rgba(0,245,255,0.05); }
+    50%      { box-shadow: 0 0 20px var(--cyan), inset 0 0 15px rgba(0,245,255,0.1); }
+  }
+  @keyframes pulse-pink {
+    0%,100% { box-shadow: 0 0 8px var(--pink), inset 0 0 8px rgba(255,45,120,0.05); }
+    50%      { box-shadow: 0 0 20px var(--pink), inset 0 0 15px rgba(255,45,120,0.1); }
+  }
+  @keyframes pulse-purple {
+    0%,100% { box-shadow: 0 0 8px var(--purple), inset 0 0 8px rgba(180,79,255,0.05); }
+    50%      { box-shadow: 0 0 20px var(--purple), inset 0 0 15px rgba(180,79,255,0.1); }
+  }
+  @keyframes scanline-move {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* Moving scanline */
+  .scanline {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(transparent, rgba(0,245,255,0.15), transparent);
+    animation: scanline-move 6s linear infinite;
+    pointer-events: none;
+    z-index: 9997;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(4,4,13,0.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0,245,255,0.2);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: var(--orbitron);
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 12px var(--cyan);
+    animation: flicker 8s infinite;
+  }
+
+  .nav-logo span { color: var(--pink); text-shadow: 0 0 12px var(--pink); }
+
+  .nav-links {
+    display: flex;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0 1.25rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    border-left: 1px solid rgba(255,255,255,0.05);
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .nav-links a:hover {
+    color: var(--cyan);
+    background: rgba(0,245,255,0.05);
+    text-shadow: 0 0 8px var(--cyan);
+  }
+
+  .nav-links .li-special a {
+    color: var(--pink);
+  }
+  .nav-links .li-special a:hover {
+    color: var(--pink);
+    background: rgba(255,45,120,0.07);
+    text-shadow: 0 0 8px var(--pink);
+  }
+
+  /* ─── SECTIONS ─── */
+  section { position: relative; z-index: 1; }
+
+  .page { max-width: 1080px; margin: 0 auto; padding: 0 2rem; }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 100px 2rem 4rem;
+    max-width: 1080px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* Decorative corner brackets */
+  #hero::before, #hero::after {
+    content: '';
+    position: absolute;
+    width: 60px; height: 60px;
+    border-color: rgba(0,245,255,0.25);
+    border-style: solid;
+  }
+  #hero::before { top: 80px; left: 0; border-width: 2px 0 0 2px; }
+  #hero::after  { bottom: 20px; right: 0; border-width: 0 2px 2px 0; }
+
+  .hero-inner { width: 100%; }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '>>>  ';
+    color: var(--pink);
+  }
+
+  /* Glitch title */
+  .glitch-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .glitch-title {
+    font-family: var(--orbitron);
+    font-size: clamp(2.8rem, 8vw, 6rem);
+    font-weight: 900;
+    color: var(--text-bright);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 30px rgba(0,245,255,0.3);
+    position: relative;
+  }
+
+  .glitch-title::before,
+  .glitch-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    font-family: var(--orbitron);
+    font-size: inherit;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+  }
+
+  .glitch-title::before {
+    color: var(--pink);
+    animation: glitch1 4s infinite;
+    opacity: 0.7;
+  }
+
+  .glitch-title::after {
+    color: var(--cyan);
+    animation: glitch2 4s infinite 0.1s;
+    opacity: 0.7;
+  }
+
+  .hero-name-line {
+    font-family: var(--orbitron);
+    font-size: clamp(1.4rem, 4vw, 2.8rem);
+    font-weight: 400;
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan);
+    letter-spacing: 0.08em;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-name-line span { color: var(--pink); text-shadow: 0 0 20px var(--pink); }
+
+  .hero-subtitle {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    margin-bottom: 2rem;
+  }
+
+  .hero-subtitle .hl { color: var(--yellow); }
+
+  .hero-desc {
+    max-width: 580px;
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    border-left: 2px solid var(--pink);
+    padding-left: 1.25rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-cyber {
+    font-family: var(--orbitron);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 13px 28px;
+    border: 1px solid;
+    position: relative;
+    transition: all 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .btn-cyber::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .btn-cyber:hover::before { opacity: 0.1; }
+
+  .btn-cyan {
+    color: var(--cyan);
+    border-color: var(--cyan);
+    text-shadow: 0 0 8px var(--cyan);
+    box-shadow: 0 0 15px rgba(0,245,255,0.2), inset 0 0 15px rgba(0,245,255,0.05);
+  }
+  .btn-cyan:hover {
+    box-shadow: 0 0 25px rgba(0,245,255,0.5), inset 0 0 25px rgba(0,245,255,0.1);
+  }
+
+  .btn-pink {
+    color: var(--pink);
+    border-color: var(--pink);
+    text-shadow: 0 0 8px var(--pink);
+    box-shadow: 0 0 15px rgba(255,45,120,0.2), inset 0 0 15px rgba(255,45,120,0.05);
+  }
+  .btn-pink:hover {
+    box-shadow: 0 0 25px rgba(255,45,120,0.5), inset 0 0 25px rgba(255,45,120,0.1);
+  }
+
+  .btn-yellow {
+    color: var(--yellow);
+    border-color: var(--yellow);
+    text-shadow: 0 0 8px var(--yellow);
+    box-shadow: 0 0 15px rgba(255,230,0,0.15);
+  }
+  .btn-yellow:hover {
+    box-shadow: 0 0 25px rgba(255,230,0,0.4);
+  }
+
+  .btn-purple {
+    color: var(--purple);
+    border-color: var(--purple);
+    text-shadow: 0 0 8px var(--purple);
+    box-shadow: 0 0 15px rgba(180,79,255,0.2), inset 0 0 15px rgba(180,79,255,0.05);
+  }
+  .btn-purple:hover {
+    box-shadow: 0 0 25px rgba(180,79,255,0.5), inset 0 0 25px rgba(180,79,255,0.1);
+  }
+
+  /* Status pill */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--green);
+    border: 1px solid rgba(0,255,157,0.3);
+    padding: 6px 14px;
+    margin-bottom: 2rem;
+    letter-spacing: 0.1em;
+    animation: pulse-border 2.5s ease-in-out infinite;
+    background: rgba(0,255,157,0.04);
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .status-pill-dot {
+    width: 5px; height: 5px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--green);
+    animation: blink 1.5s step-end infinite;
+  }
+
+  /* ─── SECTION STYLE ─── */
+  .section-wrap { padding: 5rem 0; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--pink);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::before { content: '//'; color: var(--text-dim); }
+
+  h2 {
+    font-family: var(--orbitron);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 900;
+    color: var(--text-bright);
+    margin-bottom: 3rem;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 20px rgba(0,245,255,0.2);
+  }
+
+  /* ─── CYBER CARD ─── */
+  .cyber-card {
+    background: var(--surface);
+    border: 1px solid rgba(0,245,255,0.15);
+    position: relative;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .cyber-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 20px;
+    width: 60px; height: 2px;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    transition: width 0.3s;
+  }
+
+  .cyber-card:hover {
+    border-color: rgba(0,245,255,0.4);
+    box-shadow: 0 0 25px rgba(0,245,255,0.08);
+  }
+
+  .cyber-card:hover::before { width: 120px; }
+
+  .cyber-card-pink::before { background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+  .cyber-card-pink { border-color: rgba(255,45,120,0.15); }
+  .cyber-card-pink:hover { border-color: rgba(255,45,120,0.4); box-shadow: 0 0 25px rgba(255,45,120,0.08); }
+
+  .cyber-card-purple::before { background: var(--purple); box-shadow: 0 0 8px var(--purple); }
+  .cyber-card-purple { border-color: rgba(180,79,255,0.15); }
+  .cyber-card-purple:hover { border-color: rgba(180,79,255,0.4); box-shadow: 0 0 25px rgba(180,79,255,0.08); }
+
+  /* ─── ABOUT ─── */
+  #about { background: var(--bg2); border-top: 1px solid rgba(0,245,255,0.08); border-bottom: 1px solid rgba(0,245,255,0.08); }
+
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .about-text p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(0,245,255,0.1);
+    border: 1px solid rgba(0,245,255,0.1);
+  }
+
+  .stat-cell {
+    background: var(--surface);
+    padding: 1rem 1.25rem;
+  }
+
+  .stat-cell-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .stat-cell-value {
+    font-family: var(--orbitron);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-shadow: 0 0 8px rgba(0,245,255,0.4);
+  }
+
+  /* ─── SKILLS ─── */
+  .skills-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .skill-panel {
+    padding: 1.5rem;
+  }
+
+  .skill-panel-header {
+    font-family: var(--orbitron);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid;
+  }
+
+  .skill-panel-header.cyan { color: var(--cyan); border-color: rgba(0,245,255,0.3); text-shadow: 0 0 8px var(--cyan); }
+  .skill-panel-header.pink { color: var(--pink); border-color: rgba(255,45,120,0.3); text-shadow: 0 0 8px var(--pink); }
+  .skill-panel-header.yellow { color: var(--yellow); border-color: rgba(255,230,0,0.3); text-shadow: 0 0 8px var(--yellow); }
+
+  .skill-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.45rem 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: color 0.2s;
+  }
+
+  .skill-item:hover { color: var(--text-bright); }
+
+  .skill-item::before {
+    content: '▸';
+    font-size: 10px;
+    color: var(--pink);
+  }
+
+  /* ─── PROJECTS ─── */
+  #projects { background: var(--bg2); border-top: 1px solid rgba(255,45,120,0.08); border-bottom: 1px solid rgba(255,45,120,0.08); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-card-id {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-lang-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--cyan);
+    border: 1px solid rgba(0,245,255,0.3);
+    padding: 3px 10px;
+    margin-bottom: 0.75rem;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    background: rgba(0,245,255,0.05);
+    width: fit-content;
+  }
+
+  .project-lang-badge.java { color: var(--pink); border-color: rgba(255,45,120,0.3); background: rgba(255,45,120,0.05); }
+
+  .project-name {
+    font-family: var(--orbitron);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: 0.03em;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .project-desc {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+    flex: 1;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-dim);
+  }
+
+  .project-footer-link {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: text-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  .project-footer-link:hover { text-shadow: 0 0 10px var(--cyan); }
+  .project-footer-link::before { content: '→'; }
+
+  /* Capstone featured card */
+  .project-card-featured {
+    grid-column: 1 / -1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card-featured::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(180,79,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .capstone-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .capstone-stat {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(180,79,255,0.2);
+    background: rgba(180,79,255,0.04);
+    min-width: 120px;
+  }
+
+  .capstone-stat-value {
+    font-family: var(--orbitron);
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--purple);
+    text-shadow: 0 0 10px rgba(180,79,255,0.5);
+  }
+
+  .capstone-stat-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .capstone-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .github-cta-strip {
+    margin-top: 2rem;
+    border: 1px solid rgba(0,245,255,0.2);
+    background: var(--surface);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .github-cta-strip::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(var(--cyan), var(--pink));
+    box-shadow: 0 0 12px var(--cyan);
+  }
+
+  .github-cta-text strong {
+    font-family: var(--orbitron);
+    font-size: 14px;
+    color: var(--text-bright);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .github-cta-text span {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* ─── PDF MODAL ─── */
+  .pdf-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(4,4,13,0.92);
+    backdrop-filter: blur(12px);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .pdf-modal {
+    background: var(--bg2);
+    border: 1px solid rgba(180,79,255,0.3);
+    width: 100%;
+    max-width: 960px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    animation: modal-in 0.3s ease-out;
+    box-shadow: 0 0 60px rgba(180,79,255,0.15), 0 0 120px rgba(180,79,255,0.05);
+    position: relative;
+  }
+
+  .pdf-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid rgba(180,79,255,0.2);
+    background: rgba(180,79,255,0.06);
+    flex-shrink: 0;
+  }
+
+  .pdf-modal-title {
+    font-family: var(--orbitron);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--purple);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 8px var(--purple);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .pdf-modal-title-dot {
+    width: 6px; height: 6px;
+    background: var(--purple);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--purple);
+    animation: blink 1.5s step-end infinite;
+  }
+
+  .pdf-modal-close {
+    font-family: var(--orbitron);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--pink);
+    background: none;
+    border: 1px solid rgba(255,45,120,0.3);
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .pdf-modal-close:hover {
+    background: rgba(255,45,120,0.1);
+    box-shadow: 0 0 15px rgba(255,45,120,0.2);
+  }
+
+  .pdf-modal-body {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .pdf-modal-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  /* ─── YOUTUBE ─── */
+  .yt-layout {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .yt-player {
+    border: 1px solid rgba(255,45,120,0.25);
+    background: var(--surface);
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(255,45,120,0.1);
+    animation: pulse-pink 3s ease-in-out infinite;
+  }
+
+  .yt-header {
+    background: rgba(255,45,120,0.08);
+    border-bottom: 1px solid rgba(255,45,120,0.2);
+    padding: 0.5rem 1rem;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--pink);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .yt-header-dot { width: 6px; height: 6px; background: var(--pink); border-radius: 50%; box-shadow: 0 0 6px var(--pink); animation: blink 1s step-end infinite; }
+
+  .yt-player iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border: none;
+  }
+
+  .yt-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+
+  .yt-channel-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid rgba(255,45,120,0.2);
+    background: var(--surface);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .yt-channel-card:hover {
+    border-color: var(--pink);
+    box-shadow: 0 0 20px rgba(255,45,120,0.2);
+  }
+
+  .yt-play-icon {
+    width: 44px; height: 44px;
+    border: 2px solid var(--pink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pink);
+    font-size: 16px;
+    text-shadow: 0 0 8px var(--pink);
+    flex-shrink: 0;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .yt-channel-name {
+    font-family: var(--orbitron);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 2px;
+  }
+
+  .yt-channel-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ─── CONTACT ─── */
+  #contact { background: var(--bg2); border-top: 1px solid rgba(0,245,255,0.08); }
+
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .contact-text p {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .availability-card {
+    border: 1px solid rgba(0,255,157,0.3);
+    background: rgba(0,255,157,0.04);
+    padding: 1.25rem;
+    animation: pulse-border 2.5s ease-in-out infinite;
+  }
+
+  .availability-card-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--green);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .availability-card h3 {
+    font-family: var(--orbitron);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--green);
+    text-shadow: 0 0 10px var(--green);
+    margin-bottom: 0.5rem;
+  }
+
+  .availability-card p {
+    font-size: 13px;
+    color: rgba(0,255,157,0.6);
+    line-height: 1.6;
+  }
+
+  .social-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .social-card {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.2s;
+    color: var(--text);
+  }
+
+  .social-card:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0,245,255,0.1);
+    color: var(--text-bright);
+  }
+
+  .social-card.pink:hover { border-color: var(--pink); box-shadow: 0 0 15px rgba(255,45,120,0.1); }
+  .social-card.yellow:hover { border-color: var(--yellow); box-shadow: 0 0 15px rgba(255,230,0,0.1); }
+  .social-card.purple:hover { border-color: var(--purple); box-shadow: 0 0 15px rgba(180,79,255,0.1); }
+
+  .social-card-icon {
+    font-family: var(--orbitron);
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--cyan);
+    min-width: 36px;
+    text-shadow: 0 0 8px var(--cyan);
+  }
+
+  .social-card.pink .social-card-icon { color: var(--pink); text-shadow: 0 0 8px var(--pink); }
+  .social-card.yellow .social-card-icon { color: var(--yellow); text-shadow: 0 0 8px var(--yellow); }
+  .social-card.purple .social-card-icon { color: var(--purple); text-shadow: 0 0 8px var(--purple); }
+
+  .social-card-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .social-card-value {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-bright);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid rgba(0,245,255,0.1);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .footer-logo {
+    font-family: var(--orbitron);
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 10px var(--cyan);
+    letter-spacing: 0.1em;
+    animation: flicker 10s infinite;
+  }
+
+  .footer-logo span { color: var(--pink); text-shadow: 0 0 10px var(--pink); }
+
+  .footer-text {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .about-layout,
+    .skills-layout,
+    .projects-grid,
+    .yt-layout,
+    .contact-layout,
+    .social-grid { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .glitch-title { font-size: 2.5rem; }
+    .project-card-featured { grid-column: 1; }
+    .pdf-modal { height: 75vh; }
+    .capstone-stats { gap: 0.75rem; }
+    .capstone-stat { min-width: 100px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">JESSE<span>.EXE</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#youtube">YouTube</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li class="li-special"><a href="https://www.linkedin.com/in/jesse-agbesi-61bb36213/" target="_blank">LinkedIn ↗</a></li>
+    <li><a href="https://github.com/Jessefire5" target="_blank">GitHub ↗</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="status-pill">
+      <span class="status-pill-dot"></span>
+      SYSTEM ONLINE · OPEN TO OPPORTUNITIES
+    </div>
+    <div class="hero-eyebrow">Information Systems · Towson University · Class of 2026</div>
+    <div class="glitch-wrap">
+      <h1 class="glitch-title" data-text="JESSE">JESSE</h1>
+    </div>
+    <div class="hero-name-line">AGBESI<span>_</span></div>
+    <p class="hero-subtitle">
+      B.S. Information Systems &nbsp;|&nbsp;
+      <span class="hl">Data Analytics</span> &nbsp;·&nbsp;
+      <span class="hl">Cybersecurity</span> &nbsp;·&nbsp;
+      <span class="hl">IT Management</span>
+    </p>
+    <p class="hero-desc">
+      A senior IS student who builds systems that work — SQL databases, Java applications, and everything in between. Bridging technical precision with real business impact since day one.
+    </p>
+    <div class="hero-cta">
+      <a href="https://github.com/Jessefire5" target="_blank" class="btn-cyber btn-cyan">View GitHub</a>
+      <a href="https://www.linkedin.com/in/jesse-agbesi-61bb36213/" target="_blank" class="btn-cyber btn-pink">LinkedIn</a>
+      <a href="https://www.youtube.com/channel/UCSgl13z8jsWt_ktgRQPwIBA" target="_blank" class="btn-cyber btn-yellow">YouTube</a>
+      <a href="#contact" class="btn-cyber btn-cyan">Contact Me</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="page section-wrap">
+    <div class="section-label">About</div>
+    <h2>PLAYER PROFILE</h2>
+    <div class="about-layout">
+      <div class="about-text">
+        <p>I'm a senior at Towson University pursuing a B.S. in Information Systems with a Business Track concentration — graduating May 2026. My coursework spans Data Analytics, Cybersecurity, IT Project Management, and Systems Administration.</p>
+        <p>Active in the Software Engineering Club and Esports Club at Towson. I thrive where strategy meets execution — whether that's a database architecture or a competitive match.</p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-cell">
+          <div class="stat-cell-label">University</div>
+          <div class="stat-cell-value">TOWSON</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">Graduation</div>
+          <div class="stat-cell-value">MAY 2026</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">Degree</div>
+          <div class="stat-cell-value">B.S. IS</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">Track</div>
+          <div class="stat-cell-value">BUSINESS</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">Location</div>
+          <div class="stat-cell-value">BALTIMORE</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell-label">Status</div>
+          <div class="stat-cell-value" style="color:var(--green);text-shadow:0 0 8px var(--green);">AVAILABLE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="page section-wrap">
+    <div class="section-label">Skills</div>
+    <h2>LOADOUT</h2>
+    <div class="skills-layout">
+      <div class="cyber-card skill-panel">
+        <div class="skill-panel-header cyan">// PROFICIENT</div>
+        <div class="skill-item">SQL & Database Management</div>
+        <div class="skill-item">Java (OOP)</div>
+        <div class="skill-item">System Analysis & Design</div>
+        <div class="skill-item">IT Project Management</div>
+        <div class="skill-item">Relational Schema Design</div>
+      </div>
+      <div class="cyber-card cyber-card-pink skill-panel">
+        <div class="skill-panel-header pink">// FAMILIAR</div>
+        <div class="skill-item">Python</div>
+        <div class="skill-item">Linux</div>
+        <div class="skill-item">HTML / CSS</div>
+        <div class="skill-item">Wireshark</div>
+        <div class="skill-item">Network Administration</div>
+        <div class="skill-item">Cybersecurity Fundamentals</div>
+      </div>
+      <div class="cyber-card cyber-card-purple skill-panel">
+        <div class="skill-panel-header yellow">// COURSEWORK</div>
+        <div class="skill-item">Database Management</div>
+        <div class="skill-item">Advanced Data Management</div>
+        <div class="skill-item">System Analysis & Design</div>
+        <div class="skill-item">Intro to Cybersecurity</div>
+        <div class="skill-item">IT Project Management</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="page section-wrap">
+    <div class="section-label">Projects</div>
+    <h2>DEPLOYED MISSIONS</h2>
+    <div class="projects-grid">
+
+      <!-- CAPSTONE — Featured full-width -->
+      <div class="cyber-card cyber-card-purple project-card project-card-featured">
+        <div class="project-card-id">MISSION_003 · SENIOR CAPSTONE · SPRING 2026</div>
+        <div class="project-lang-badge" style="color:var(--purple);border-color:rgba(180,79,255,0.3);background:rgba(180,79,255,0.05);">★ CAPSTONE PROJECT</div>
+        <div class="project-name">Student Travel — CIS Department Process Automation</div>
+        <p class="project-desc">Senior capstone project for the CIS Department's Travel Coordinator, Ms. Angela McDermott. Redesigned the student travel pre-authorization workflow using Microsoft Forms and Power Automate — cutting email volume from 10+ per request to just 1, saving roughly 1 hour per student. Built an automated Excel admin panel that reduced data complexity from 30+ fields to under 15, and implemented automated confirmation and reminder email workflows across the travel lifecycle. Conducted usability testing with students and delivered a full handoff package for production use.</p>
+        <div class="capstone-stats">
+          <div class="capstone-stat">
+            <div class="capstone-stat-value">90%</div>
+            <div class="capstone-stat-label">Email Reduction</div>
+          </div>
+          <div class="capstone-stat">
+            <div class="capstone-stat-value">~1 HR</div>
+            <div class="capstone-stat-label">Saved / Student</div>
+          </div>
+          <div class="capstone-stat">
+            <div class="capstone-stat-value">370+</div>
+            <div class="capstone-stat-label">Users Supported</div>
+          </div>
+          <div class="capstone-stat">
+            <div class="capstone-stat-value">50%</div>
+            <div class="capstone-stat-label">Fields Reduced</div>
+          </div>
+        </div>
+        <div class="project-tags">
+          <span class="project-tag">Microsoft Forms</span>
+          <span class="project-tag">Power Automate</span>
+          <span class="project-tag">Excel Automation</span>
+          <span class="project-tag">Process Design</span>
+          <span class="project-tag">DFD Modeling</span>
+          <span class="project-tag">Usability Testing</span>
+          <span class="project-tag">DocuSign</span>
+          <span class="project-tag">Stratus</span>
+        </div>
+        <div class="capstone-actions">
+          <a href="#" onclick="document.getElementById('pdf-modal').style.display='flex';return false;" class="btn-cyber btn-purple">View Presentation</a>
+        </div>
+      </div>
+
+      <div class="cyber-card project-card">
+        <div class="project-card-id">MISSION_001 · SQL</div>
+        <div class="project-lang-badge">■ SQL</div>
+        <div class="project-name">Library Database Management System</div>
+        <p class="project-desc">A fully normalized relational database system managing library operations — tracking books, members, loans, and returns. Built with strong schema design and complex query optimization.</p>
+        <div class="project-tags">
+          <span class="project-tag">SQL</span>
+          <span class="project-tag">Relational DB</span>
+          <span class="project-tag">Schema Design</span>
+          <span class="project-tag">Data Mgmt</span>
+        </div>
+        <a href="https://github.com/Jessefire5" target="_blank" class="project-footer-link">View on GitHub</a>
+      </div>
+
+      <div class="cyber-card cyber-card-pink project-card">
+        <div class="project-card-id">MISSION_002 · Java</div>
+        <div class="project-lang-badge java">■ JAVA</div>
+        <div class="project-name">Task Management Application</div>
+        <p class="project-desc">An object-oriented Java application for creating, tracking, and organizing tasks with priority levels and deadlines. Demonstrates clean architecture and practical OOP design patterns.</p>
+        <div class="project-tags">
+          <span class="project-tag">Java</span>
+          <span class="project-tag">OOP</span>
+          <span class="project-tag">Data Structures</span>
+          <span class="project-tag">App Design</span>
+        </div>
+        <a href="https://github.com/Jessefire5" target="_blank" class="project-footer-link" style="color:var(--pink);">View on GitHub</a>
+      </div>
+
+    </div>
+    <div class="github-cta-strip">
+      <div class="github-cta-text">
+        <strong>More on GitHub</strong>
+        <span>github.com/Jessefire5 · All repos & activity</span>
+      </div>
+      <a href="https://github.com/Jessefire5" target="_blank" class="btn-cyber btn-cyan">Access Profile</a>
+    </div>
+  </div>
+</section>
+
+<!-- YOUTUBE -->
+<section id="youtube">
+  <div class="page section-wrap">
+    <div class="section-label">YouTube</div>
+    <h2>BROADCAST CHANNEL</h2>
+    <div class="yt-layout">
+      <div class="yt-player">
+        <div class="yt-header">
+          <span class="yt-header-dot"></span>
+          LIVE FEED · JESSE.CHANNEL
+        </div>
+        <iframe
+          src="https://www.youtube.com/embed?listType=user_uploads&list=UCSgl13z8jsWt_ktgRQPwIBA"
+          title="Jesse's YouTube Channel"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="yt-sidebar">
+        <a href="https://www.youtube.com/channel/UCSgl13z8jsWt_ktgRQPwIBA" target="_blank" class="yt-channel-card">
+          <div class="yt-play-icon">▶</div>
+          <div>
+            <div class="yt-channel-name">Jesse's Channel</div>
+            <div class="yt-channel-sub">Visit on YouTube ↗</div>
+          </div>
+        </a>
+        <div class="cyber-card cyber-card-pink" style="padding:1.25rem;">
+          <div class="section-label" style="margin-bottom:0.5rem;font-size:9px;">About</div>
+          <p style="font-size:13px;color:var(--text);line-height:1.7;">Videos on tech, gaming, and more. Subscribe to follow along with the latest uploads.</p>
+        </div>
+        <div class="cyber-card" style="padding:1.25rem;">
+          <div class="section-label" style="margin-bottom:0.5rem;font-size:9px;">Channel ID</div>
+          <p style="font-family:var(--mono);font-size:10px;color:var(--cyan);word-break:break-all;letter-spacing:0.04em;">UCSgl13z8jsWt_ktgRQPwIBA</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="page section-wrap">
+    <div class="section-label">Contact</div>
+    <h2>ESTABLISH CONNECTION</h2>
+    <div class="contact-layout">
+      <div class="contact-text">
+        <p>Graduating May 2026 and actively seeking full-time IS roles. Open to Data Analytics, Cybersecurity, IT PM, and Systems Administration positions — remote or Baltimore/DC area.</p>
+        <div class="availability-card">
+          <div class="availability-card-label">
+            <span class="status-pill-dot" style="width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);animation:blink 1.5s step-end infinite;display:inline-block;"></span>
+            System Status
+          </div>
+          <h3>OPEN TO OPPORTUNITIES</h3>
+          <p>Available from May 2026. Response time within 24 hours.</p>
+        </div>
+      </div>
+      <div class="social-grid">
+        <a href="mailto:ultimateagbesi@icloud.com" class="social-card">
+          <div class="social-card-icon">✉</div>
+          <div>
+            <div class="social-card-label">Email</div>
+            <div class="social-card-value">ultimateagbesi@icloud.com</div>
+          </div>
+        </a>
+        <a href="https://www.linkedin.com/in/jesse-agbesi-61bb36213/" target="_blank" class="social-card pink">
+          <div class="social-card-icon">in</div>
+          <div>
+            <div class="social-card-label">LinkedIn</div>
+            <div class="social-card-value">jesse-agbesi</div>
+          </div>
+        </a>
+        <a href="https://github.com/Jessefire5" target="_blank" class="social-card">
+          <div class="social-card-icon">GH</div>
+          <div>
+            <div class="social-card-label">GitHub</div>
+            <div class="social-card-value">Jessefire5</div>
+          </div>
+        </a>
+        <a href="https://www.instagram.com/jessefire5/" target="_blank" class="social-card yellow">
+          <div class="social-card-icon">IG</div>
+          <div>
+            <div class="social-card-label">Instagram</div>
+            <div class="social-card-value">@jessefire5</div>
+          </div>
+        </a>
+        <a href="https://www.youtube.com/channel/UCSgl13z8jsWt_ktgRQPwIBA" target="_blank" class="social-card pink">
+          <div class="social-card-icon">YT</div>
+          <div>
+            <div class="social-card-label">YouTube</div>
+            <div class="social-card-value">Jesse's Channel</div>
+          </div>
+        </a>
+        <div class="social-card" style="cursor:default;">
+          <div class="social-card-icon" style="font-size:18px;">📍</div>
+          <div>
+            <div class="social-card-label">Location</div>
+            <div class="social-card-value">Baltimore, MD</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">JESSE<span>.EXE</span></div>
+  <div class="footer-text">© 2026 · TOWSON UNIVERSITY · ALL RIGHTS RESERVED</div>
+  <div class="footer-text" style="color:var(--cyan);text-shadow:0 0 6px var(--cyan);">SESSION ACTIVE ■</div>
+</footer>
+
+<!-- PDF MODAL -->
+<div class="pdf-modal-overlay" id="pdf-modal">
+  <div class="pdf-modal">
+    <div class="pdf-modal-header">
+      <div class="pdf-modal-title">
+        <span class="pdf-modal-title-dot"></span>
+        CAPSTONE PRESENTATION · STUDENT TRAVEL
+      </div>
+      <button class="pdf-modal-close" onclick="document.getElementById('pdf-modal').style.display='none';">✕ CLOSE</button>
+    </div>
+    <div class="pdf-modal-body">
+      <iframe src="Final_Presentation.pdf" title="Capstone Presentation PDF"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Close modal on overlay click
+  document.getElementById('pdf-modal').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') document.getElementById('pdf-modal').style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
